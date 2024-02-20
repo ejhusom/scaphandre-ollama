@@ -430,7 +430,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "sum(avg_over_time(scaph_process_power_consumption_microwatts{exe=\"ollama\"}[1h]) / 1000000)"
+                  "sum(avg_over_time(scaph_process_power_consumption_microwatts{cmdline=~\".*ollama.*\"}[1h])) / 1000000"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -450,7 +450,7 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 12,
         "x": 12,
         "y": 9
@@ -475,15 +475,15 @@
             "uid": "PBE40D95A8B8C9AF4"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum(avg_over_time(scaph_process_power_consumption_microwatts{exe=\"ollama\"}[1h]) / 1000000)",
+          "editorMode": "code",
+          "expr": "sum(avg_over_time(scaph_process_power_consumption_microwatts{cmdline=~\".*ollama.*\"}[1h])) / 1000000",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "B",
+          "refId": "A",
           "useBackend": false
         }
       ],
@@ -500,7 +500,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 16
       },
       "id": 9,
       "panels": [],
@@ -537,7 +537,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 18
+        "y": 17
       },
       "id": 5,
       "links": [],
@@ -593,7 +593,7 @@
         "h": 7,
         "w": 16,
         "x": 8,
-        "y": 18
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 6,
@@ -750,6 +750,6 @@
   "timezone": "browser",
   "title": "Scaphandre Ollama",
   "uid": "f06210a0-0df2-4546-971d-3a73fcecfecd",
-  "version": 4,
+  "version": 5,
   "weekStart": ""
 }
