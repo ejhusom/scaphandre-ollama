@@ -24,3 +24,4 @@
 
 # Used by integration tests
 /integration_tests
+*.swp
