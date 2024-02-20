@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Call Ollama API (Docker).
+"""Client for LLM APIs.
+
+This module provides a client for calling the LLM APIs, focusing on simplicity and flexibility.
+It allows users to interact with the API to send requests and receive responses.
 
 Author:
     Erik Johannes Husom
 
 Created:
+    2024-02-01
 
 """
 import json
@@ -14,70 +18,76 @@ import requests
 
 
 class LLMAPIClient:
+    """A client for interacting with LLM (Large Language Model) APIs such as Ollama.
+    
+    Attributes:
+        api_url (str): The URL of the API endpoint.
+        model_name (str): Default model name to use for requests.
+        role (str): Default role to use in the message payload.
+    """
+
     def __init__(
         self,
         api_url,
         model_name,
         role="user",
     ):
+        """Initialize the API client with a specific API URL, model name, and role."""
+
         self.api_url = api_url
         self.model_name = model_name
         self.role = role
 
     def call_api(self, content, model_name=None, role=None, stream=False):
+        """Send a request to the API with the given content, model name, and role.
+        
+        Args:
+            content (str): The content of the message to be sent to the API.
+            model_name (str, optional): The model name to use for this request. Defaults to None.
+            role (str, optional): The role to use for this message. Defaults to None.
+            stream (bool, optional): Whether to stream the response. Defaults to False.
+        
+        Returns:
+            tuple: A tuple containing the API response and extracted metadata as a dictionary.
+        """
 
         if model_name is None:
             model_name = self.model_name
         if role is None:
             role = self.role
 
-        # The data to be sent to the API
         data = {
             "model": model_name, 
-            "messages": [
-                {
-                    "role": role, 
-                    "content": content
-                }
-            ],
+            "messages": [{"role": role, "content": content}],
             "stream": stream
         }
 
-        # Convert the Python dictionary to a JSON string
-        data_json = json.dumps(data)
-
-        # Make the POST request to the API
-        response = requests.post(self.api_url, data=data_json)
-
-        # Check if the request was successful
-        if response.status_code != 200:
-            print(f"Failed to get response, status code: {response.status_code}")
-            return response
+        try:
+            response = requests.post(self.api_url, json=data)
+            response.raise_for_status()  # Raises HTTPError for bad responses
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None, {}
 
         response_json = json.loads(response.text)
 
         metadata = {}
         # name of model
-        metadata["model_name"] = response_json["model"]
+        metadata["model_name"] = response_json["model"]
         # timestamp for creation of response
-        metadata["created_at"] = response_json["created_at"]
+        metadata["created_at"] = response_json["created_at"]
         # time spent generating the response
-        metadata["total_duration"] = response_json["total_duration"]
+        metadata["total_duration"] = response_json["total_duration"]
         # time spent in nanoseconds loading the model
-        metadata["load_duration"] = response_json["load_duration"]
+        metadata["load_duration"] = response_json["load_duration"]
         # number of tokens in the prompt
-        metadata["prompt_token_length"] = response_json["prompt_eval_count"]
+        metadata["prompt_token_length"] = response_json["prompt_eval_count"]
         # time spent in nanoseconds evaluating the prompt
-        metadata["prompt_duration"] = response_json["prompt_eval_duration"]
+        metadata["prompt_duration"] = response_json["prompt_eval_duration"]
         # number of tokens the response
-        metadata["response_token_length"] = response_json["eval_count"]
+        metadata["response_token_length"] = response_json["eval_count"]
         # time in nanoseconds spent generating the response
-        metadata["response_duration"] = response_json["eval_duration"]
-
-        # prompt_length = len(content)
-        # response_length = len(response.text)
-        # print(f"Prompt length: {prompt_length}")
-        # print(f"Response length: {response_length}")
+        metadata["response_duration"] = response_json["eval_duration"]
 
         return response, metadata
 
@@ -92,8 +102,9 @@ def use_ollama_client(
 
     ollama_client = LLMAPIClient(api_url=api_url, model_name=model_name, role="user")
 
-    response = ollama_client.call_api(content=content, stream=stream)
+    response, metadata = ollama_client.call_api(content=content, stream=stream)
     print(response.text)
+    print(metadata)
 
 
 if __name__ == "__main__":
