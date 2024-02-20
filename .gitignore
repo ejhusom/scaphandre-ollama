@@ -24,4 +24,9 @@
 
 # Used by integration tests
 /integration_tests
+
+# Temporary files
 *.swp
+
+# Data files
+docker-compose/*.json

@@ -13,7 +13,6 @@ Created:
 
 """
 import json
-
 import requests
 
 
@@ -83,30 +82,3 @@ class LLMAPIClient:
         }
 
         return response, metadata
-
-
-def use_ollama_client(
-    model_name="mistral",
-    content="How can we use Artificial Intelligence for a better society?",
-    stream=False,
-):
-    """Demonstrates how to use the LLMAPIClient to send a request to the Ollama API.
-    
-    Args:
-        model_name (str, optional): The model name for the request. Defaults to "mistral".
-        content (str): The content of the message to be sent.
-        stream (bool, optional): Whether to stream the response. Defaults to False.
-    """
-    api_url = "http://localhost:11434/api/chat"
-    ollama_client = LLMAPIClient(api_url=api_url, model_name=model_name, role="user")
-    response, metadata = ollama_client.call_api(content=content, stream=stream)
-    if response:
-        print(response.text)
-        print(metadata)
-    else:
-        print("Failed to get a response.")
-
-
-if __name__ == "__main__":
-
-    use_ollama_client(content="What is the capital in France?")
