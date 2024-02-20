@@ -71,23 +71,16 @@ class LLMAPIClient:
 
         response_json = json.loads(response.text)
 
-        metadata = {}
-        # name of model
-        metadata["model_name"] = response_json["model"]
-        # timestamp for creation of response
-        metadata["created_at"] = response_json["created_at"]
-        # time spent generating the response
-        metadata["total_duration"] = response_json["total_duration"]
-        # time spent in nanoseconds loading the model
-        metadata["load_duration"] = response_json["load_duration"]
-        # number of tokens in the prompt
-        metadata["prompt_token_length"] = response_json["prompt_eval_count"]
-        # time spent in nanoseconds evaluating the prompt
-        metadata["prompt_duration"] = response_json["prompt_eval_duration"]
-        # number of tokens the response
-        metadata["response_token_length"] = response_json["eval_count"]
-        # time in nanoseconds spent generating the response
-        metadata["response_duration"] = response_json["eval_duration"]
+        metadata = {
+            "model_name": response_json.get("model"),
+            "created_at": response_json.get("created_at"),
+            "total_duration": response_json.get("total_duration"),
+            "load_duration": response_json.get("load_duration"),
+            "prompt_token_length": response_json.get("prompt_eval_count"),
+            "prompt_duration": response_json.get("prompt_eval_duration"),
+            "response_token_length": response_json.get("eval_count"),
+            "response_duration": response_json.get("eval_duration"),
+        }
 
         return response, metadata
 
@@ -97,14 +90,21 @@ def use_ollama_client(
     content="How can we use Artificial Intelligence for a better society?",
     stream=False,
 ):
-    # The URL of the API
+    """Demonstrates how to use the LLMAPIClient to send a request to the Ollama API.
+    
+    Args:
+        model_name (str, optional): The model name for the request. Defaults to "mistral".
+        content (str): The content of the message to be sent.
+        stream (bool, optional): Whether to stream the response. Defaults to False.
+    """
     api_url = "http://localhost:11434/api/chat"
-
     ollama_client = LLMAPIClient(api_url=api_url, model_name=model_name, role="user")
-
     response, metadata = ollama_client.call_api(content=content, stream=stream)
-    print(response.text)
-    print(metadata)
+    if response:
+        print(response.text)
+        print(metadata)
+    else:
+        print("Failed to get a response.")
 
 
 if __name__ == "__main__":
