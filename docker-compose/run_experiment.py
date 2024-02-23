@@ -43,3 +43,4 @@ def run_ollama_client(
 if __name__ == "__main__":
 
     run_ollama_client(content="What is the capital in France?", save_metadata=True)
+    run_ollama_client(content="Write 10 paragraphs about a random topic.", save_metadata=True)
